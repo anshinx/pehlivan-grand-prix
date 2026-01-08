@@ -183,7 +183,7 @@ func (team *TeamData) SimulateCar() {
 		}
 	}
 
-	// Back-EMF hesabı (görselleştirme için)
+	// Back-EMF hesabı
 	backEMF := Ke * angularVelocity
 
 	// ============================================
@@ -264,7 +264,7 @@ func (team *TeamData) SimulateCar() {
 	// BATARYA AKIMI GÜNCELLE
 	// ============================================
 	team.Data.Battery.Current = actualCurrent
-	team.Data.Battery.DischargeRate = actualCurrent / (2.800 * 7) // 21Ah * 7P = 147Ah toplam kapasite için C-rate
+	team.Data.Battery.DischargeRate = actualCurrent / (2.800 * 7) // 2.8Ah * 7P = 21Ah toplam kapasite için C-rate
 
 	fmt.Printf("%.2f km/h | %d RPM | %.2f Nm tork | %.2f A akım (max: %.1fA) | %.1f%% verimlilik | %.1f W güç\n",
 		team.Data.Motor.Speed, team.Data.Motor.RPM, team.Data.Motor.Torque,
