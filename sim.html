@@ -1,0 +1,101 @@
+<!-- sim.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simülasyon Dashboard</title>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Simülasyon Verileri</h1>
+    <canvas id="motorChart" width="800" height="300"></canvas>
+    <pre id="output"></pre>
+    <script>
+        const ctx = document.getElementById('motorChart').getContext('2d');
+        const chartData = {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Speed (km/h)',
+                    borderColor: 'blue',
+                    data: [],
+                    fill: false,
+                },
+                {
+                    label: 'Torque (Nm)',
+                    borderColor: 'red',
+                    data: [],
+                    fill: false,
+                },
+                {
+                    label: 'Current (A)',
+                    borderColor: 'green',
+                    data: [],
+                    fill: false,
+                }
+            ]
+        };
+        const motorChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                animation: false,
+                responsive: false,
+                scales: {
+                    x: { title: { display: true, text: 'Zaman' } },
+                    y: { title: { display: true, text: 'Değer' } }
+                }
+            }
+        });
+        let t = 0;
+        setInterval(async () => {
+            try {
+                const res = await fetch('/simdata');
+                const data = await res.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+                
+                // Debug: Veri yapısını kontrol et
+                console.log('Raw data:', data);
+                console.log('Data structure:', JSON.stringify(data, null, 2).substring(0, 500));
+                
+                // Takım ve motor verisini al
+                let motor = null;
+                if (Array.isArray(data) && data.length > 0) {
+                    const firstTeam = data[0];
+                    console.log('First team:', firstTeam);
+                    if (firstTeam.Data) {
+                        console.log('Team.Data:', firstTeam.Data);
+                        motor = firstTeam.Data.Motor;
+                    }
+                } else {
+                    motor = data.Data?.Motor || data.Motor;
+                }
+                
+                console.log('Motor object:', motor);
+                console.log('Motor.Speed:', motor?.Speed);
+                console.log('Motor.Torque:', motor?.Torque);
+                console.log('Motor.Current:', motor?.Current);
+                
+                if (!motor || motor.Speed === undefined) {
+                    console.error('Motor verisi bulunamadı veya Speed undefined!');
+                    return;
+                }
+                
+                // Chart'a veri ekle
+                chartData.labels.push(t++);
+                chartData.datasets[0].data.push(motor.Speed);
+                chartData.datasets[1].data.push(motor.Torque);
+                chartData.datasets[2].data.push(motor.Current);
+                // Sadece son 100 veriyi tut
+                if (chartData.labels.length > 100) {
+                    chartData.labels.shift();
+                    chartData.datasets.forEach(ds => ds.data.shift());
+                }
+                motorChart.update();
+            } catch (error) {
+                console.error('Hata:', error);
+            }
+        }, 200);
+    </script>
+</body>
+</html>
