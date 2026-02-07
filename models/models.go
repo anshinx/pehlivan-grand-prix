@@ -11,14 +11,20 @@ type TeamData struct {
 }
 
 type BatteryInfo struct {
-	SoC           float64   `json:"soc"`            // %
-	EnergyWh      float64   `json:"wh"`             // Kalan Watt-saat (1400 başlangıç)
+	SoC           float64   `json:"soc"`            // % (State of Charge)
+	EnergyWh      float64   `json:"wh"`             // Kalan Watt-saat
 	Voltage       float64   `json:"voltage"`        // V (Paket gerilimi)
 	Current       float64   `json:"current"`        // A (Akım çekişi)
-	Temp          float64   `json:"temp"`           // °C (Senin istediğin kritik veri)
+	Temp          float64   `json:"temp"`           // °C
 	Health        int       `json:"battery-health"` // %
-	CellBalance   []float64 `json:"balance"`        // Hücreler arası fark
+	CellBalance   []float64 `json:"balance"`        // 14 hücre voltajları
 	DischargeRate float64   `json:"discharge-rate"` // C-rate (1C, 2C, vb.)
+	// Yeni alanlar
+	CellVoltageMin float64 `json:"cellMin"`       // En düşük hücre voltajı
+	CellVoltageMax float64 `json:"cellMax"`       // En yüksek hücre voltajı
+	InternalRes    float64 `json:"internalRes"`   // İç direnç (mOhm)
+	TotalCapacity  float64 `json:"totalCapacity"` // Toplam kapasite (Ah)
+	UsedCapacity   float64 `json:"usedCapacity"`  // Kullanılan kapasite (Ah)
 }
 
 type MotorInfo struct {
